@@ -1,0 +1,27 @@
+browser->server: HTTP GET https://studies.cs.helsinki.fi/exampleapp/notes
+server-->browser: HTML-code
+browser->server: HTTP GET https://studies.cs.helsinki.fi/exampleapp/main.css
+server-->browser: main.css
+browser->server: HTTP GET https://studies.cs.helsinki.fi/exampleapp/main.js
+server-->browser: spa.js
+
+note over browser:
+browser starts executing js-code
+that requests JSON data from server
+end note
+
+note over browser:
+user fills in form element
+and clicks submit,
+triggering a form submit event
+But an event handler immediately
+prevents the default handling of form submit
+(page reload).
+Instead, it creates a new note,
+adds it to the notes list,
+rerenders the note list on the page,
+and sends the new note to the server.
+end note
+
+browser->server: HTTP POST https://studies.cs.helsinki.fi/exampleapp/new_note_spa -H "Content-type", "application/json"
+server-->browser: 201 Created
