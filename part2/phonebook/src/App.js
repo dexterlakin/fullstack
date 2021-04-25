@@ -115,9 +115,9 @@ const App = () => {
       var duplicate = persons.find(p => p.name === newName)
 
       if (duplicate.number === newNumber) {
-        window.alert(`${person.newName} is already added to phonebook`);
+        window.alert(`${duplicate.name} is already added to phonebook`);
       } else {
-        var updateConfirm = window.confirm(`${person.newName} is already added to phonebook, replace the old number with a new one?`);
+        var updateConfirm = window.confirm(`${duplicate.name} is already added to phonebook, replace the old number with a new one?`);
         if (updateConfirm) {
           personService
           .update(duplicate.id, person)
