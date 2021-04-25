@@ -40,14 +40,48 @@ const PersonForm = (props) => {
   )
 }
 
-const Persons = (props) => {
-  var filteredPersons = props.persons.filter(function(person) {
-    return person.name.toLowerCase().includes(props.searchTerm.toLowerCase())
-  })
+const Person = (props) => {
+
+  const handleDeleteClick = (props) => {
+    var deleteConfirm = window.confirm(`Delete ${props.name} ?`);
+    if(deleteConfirm) {
+      personService
+      .deletePerson(props.id)
+      .then(response => {
+        props.setPersons(props.persons.filter(p => p.id !== props.id))
+        console.log(`deleted ${props.name}`)
+      })
+      .catch(error => {
+        alert(`${props.name}' was already deleted from server`)
+        props.setPersons(props.persons.filter(p => p.id !== props.id))
+      })
+    }
+  }
 
   return(
     <div>
-      {filteredPersons.map(person => <p key={person.name}>{person.name} {person.number}</p>)}
+      <p>{props.name} {props.number} <button onClick={() => handleDeleteClick(props)}>delete</button></p>
+    </div>
+  )
+}
+
+
+const Persons = (props) => {
+  var filteredPersons = props.persons.filter(person => person.name.toLowerCase().includes(props.searchTerm.toLowerCase()))
+
+  return(
+    <div>
+      {filteredPersons.map((person) =>
+      <div key={person.name}>
+        <Person
+          persons={props.persons}
+          setPersons={props.setPersons}
+          name={person.name}
+          number={person.number}
+          id={person.id}
+        />
+      </div>
+      )}
     </div>
   )
 }
@@ -129,6 +163,7 @@ const App = () => {
       <h3>Number</h3>
 
       <Persons
+        setPersons={setPersons}
         persons={persons}
         searchTerm={searchTerm}
       />
