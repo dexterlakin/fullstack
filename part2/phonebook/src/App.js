@@ -40,27 +40,36 @@ const PersonForm = (props) => {
   )
 }
 
-const Person = (props) => {
+const Person = ({ props, person }) => {
 
   const handleDeleteClick = (props) => {
-    var deleteConfirm = window.confirm(`Delete ${props.name} ?`);
+    var deleteConfirm = window.confirm(`Delete ${person.name} ?`);
     if(deleteConfirm) {
       personService
-      .deletePerson(props.id)
+      .deletePerson(person.id)
       .then(response => {
         props.setPersons(props.persons.filter(p => p.id !== props.id))
-        console.log(`deleted ${props.name}`)
+        console.log(`deleted ${person.name}`)
+        personService
+        .getAll()
+        .then(allPersons => {
+          props.setPersons(allPersons)
+        })
       })
       .catch(error => {
-        alert(`${props.name}' was already deleted from server`)
-        props.setPersons(props.persons.filter(p => p.id !== props.id))
+        console.log(error)
+        props.setNotificationMessage(`${person.name} was already deleted from server`)
+        setTimeout(() => {
+          props.setNotificationMessage(null)
+        }, 5000)
+        props.setPersons(props.persons.filter(p => p.id !== person.id))
       })
     }
   }
 
   return(
     <div>
-      <p>{props.name} {props.number} <button onClick={() => handleDeleteClick(props)}>delete</button></p>
+      <p>{person.name} {person.number} <button onClick={() => handleDeleteClick(props)}>delete</button></p>
     </div>
   )
 }
@@ -74,11 +83,8 @@ const Persons = (props) => {
       {filteredPersons.map((person) =>
       <div key={person.name}>
         <Person
-          persons={props.persons}
-          setPersons={props.setPersons}
-          name={person.name}
-          number={person.number}
-          id={person.id}
+          props={props}
+          person={person}
         />
       </div>
       )}
@@ -86,12 +92,27 @@ const Persons = (props) => {
   )
 }
 
+const Notification = ({ message }) => {
+  if (message === null) {
+    return null
+  }
+  let className='notification'
+  if (message.includes('already deleted from server')) {
+    className='error'
+  }
+  return (
+    <div className={className}>
+      {message}
+    </div>
+  )
+}
+
 const App = () => {
   const [ persons, setPersons ] = useState([])
-
   const [ newName, setNewName ] = useState('')
   const [ newNumber, setNewNumber ] = useState('')
   const [ searchTerm, setSearchTerm ] = useState('')
+  const [notificationMessage, setNotificationMessage] = useState(null)
 
   useEffect(() => {
     personService
@@ -124,11 +145,11 @@ const App = () => {
           .then(returnedPerson => {
             setNewName('')
             setNewNumber('')
-          })
-          personService
-          .getAll()
-          .then(allPersons => {
-            setPersons(allPersons)
+            personService
+            .getAll()
+            .then(allPersons => {
+              setPersons(allPersons)
+            })
           })
         }
       }
@@ -141,6 +162,10 @@ const App = () => {
       setPersons(persons.concat(returnedPerson))
       setNewName('')
       setNewNumber('')
+      setNotificationMessage(`Added ${person.name}`)
+      setTimeout(() => {
+        setNotificationMessage(null)
+      }, 5000)
     })
   }
 
@@ -159,6 +184,7 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
+      <Notification message={notificationMessage} />
       <Filter
         handleSearch={handleSearch}
         searchTerm={searchTerm}
@@ -182,6 +208,7 @@ const App = () => {
       <h3>Number</h3>
 
       <Persons
+        setNotificationMessage={setNotificationMessage}
         setPersons={setPersons}
         persons={persons}
         searchTerm={searchTerm}
