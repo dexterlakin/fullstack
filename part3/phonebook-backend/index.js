@@ -1,6 +1,8 @@
 const express = require('express')
 const app = express()
 
+app.use(express.json())
+
 let persons = [
   {
     "name": "Arto Hellas",
@@ -29,8 +31,17 @@ let persons = [
   }
 ]
 
-app.get('/', (request, response) => {
-  response.send('<h1>Hello World!</h1>')
+app.get('/info', (request, response) => {
+  let date_ob = new Date();
+  let tz = Intl.DateTimeFormat().resolvedOptions().timeZone
+
+  response.send("<p>Phonebook has info for " +
+    persons.length +
+    " people</p>" +
+    "<p>" +
+    date_ob.toUTCString() + " (" + tz + ")" +
+    "</p>"
+  )
 })
 
 app.get('/api/persons', (request, response) => {
