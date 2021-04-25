@@ -57,7 +57,6 @@ const Person = ({ props, person }) => {
         })
       })
       .catch(error => {
-        console.log(error)
         props.setNotificationMessage(`${person.name} was already deleted from server`)
         setTimeout(() => {
           props.setNotificationMessage(null)
