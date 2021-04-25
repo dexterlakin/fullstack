@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react'
-import axios from 'axios'
 import personService from './services/persons'
 
 const Filter = (props) => {
@@ -45,7 +44,7 @@ const Persons = (props) => {
   var filteredPersons = props.persons.filter(function(person) {
     return person.name.toLowerCase().includes(props.searchTerm.toLowerCase())
   })
-  
+
   return(
     <div>
       {filteredPersons.map(person => <p key={person.name}>{person.name} {person.number}</p>)}
@@ -86,7 +85,7 @@ const App = () => {
   personService
     .create(person)
     .then(returnedPerson => {
-      setPersons(persons.concat(returnedPerson))  
+      setPersons(persons.concat(returnedPerson))
       setNewName('')
       setNewNumber('')
     })
@@ -115,7 +114,7 @@ const App = () => {
 
       <h3>Add a new</h3>
 
-      <PersonForm 
+      <PersonForm
         persons={persons}
         setPersons={setPersons}
         newName={newName}
@@ -132,7 +131,7 @@ const App = () => {
       <Persons
         persons={persons}
         searchTerm={searchTerm}
-      />      
+      />
     </div>
   )
 }
