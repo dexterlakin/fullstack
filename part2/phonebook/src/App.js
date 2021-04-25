@@ -108,11 +108,30 @@ const App = () => {
       number: newNumber
     }
 
-    // todo: phone number validation
-
     if (persons.some(p => p.name === newName)) {
+
       console.log('duplicate')
-      window.alert(`${newName} is already added to phonebook`);
+
+      var duplicate = persons.find(p => p.name === newName)
+
+      if (duplicate.number === newNumber) {
+        window.alert(`${person.newName} is already added to phonebook`);
+      } else {
+        var updateConfirm = window.confirm(`${person.newName} is already added to phonebook, replace the old number with a new one?`);
+        if (updateConfirm) {
+          personService
+          .update(duplicate.id, person)
+          .then(returnedPerson => {
+            setNewName('')
+            setNewNumber('')
+          })
+          personService
+          .getAll()
+          .then(allPersons => {
+            setPersons(allPersons)
+          })
+        }
+      }
       return;
     }
 
