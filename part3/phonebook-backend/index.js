@@ -1,31 +1,48 @@
-require('dotenv').config()
 const express = require('express')
-const requestLogger = require('morgan')
-
 const app = express()
-
-app.use(express.static('build'))
-app.use(express.json())
-app.use(requestLogger('combined'))
-
 const cors = require('cors')
-app.use(cors())
-
+require('dotenv').config()
 const Person = require('./models/persons')
 
+app.use(express.static('build'))
+app.use(cors())
+app.use(express.json())
+
+const errorHandler = (error, request, response, next) => {
+  console.error(error.message)
+
+  if (error.name === 'CastError') {
+    return response.status(400).send({ error: 'malformatted id' })
+  } else if (error.name === 'ValidationError') {
+    return response.status(400).json({ error: error.message })
+  }
+
+  next(error)
+}
+
+const requestLogger = (request, response, next) => {
+  console.log('Method:', request.method)
+  console.log('Path:  ', request.path)
+  console.log('Body:  ', request.body)
+  console.log('---')
+  next()
+}
+
+app.use(requestLogger)
+
 app.get('/info', (request, response) => {
-  let date_ob = new Date();
+  let date_ob = new Date()
   let tz = Intl.DateTimeFormat().resolvedOptions().timeZone
   Person.estimatedDocumentCount()
-  .then(c => {
-    response.send("<p>Phonebook has info for " +
+    .then(c => {
+      response.send('<p>Phonebook has info for ' +
     c +
-    " people</p>" +
-    "<p>" +
-    date_ob.toUTCString() + " (" + tz + ")" +
-    "</p>"
-  )
-  });
+    ' people</p>' +
+    '<p>' +
+    date_ob.toUTCString() + ' (' + tz + ')' +
+    '</p>'
+      )
+    })
 })
 
 app.get('/api/persons', (request, response) => {
@@ -42,7 +59,7 @@ app.get('/api/persons/:id', (request, response) => {
 
 app.delete('/api/persons/:id', (request, response, next) => {
   Person.findByIdAndRemove(request.params.id)
-    .then(result => {
+    .then(() => {
       response.status(204).end()
     })
     .catch(error => next(error))
@@ -50,10 +67,6 @@ app.delete('/api/persons/:id', (request, response, next) => {
 
 app.post('/api/persons', (request, response, next) => {
   const body = request.body
-
-  if (body.name === undefined || body.number === undefined) {
-    return response.status(400).json({ error: 'name or number missing' })
-  }
 
   const person = new Person({
     name: body.name,
@@ -64,10 +77,10 @@ app.post('/api/persons', (request, response, next) => {
     .save()
     .then(savedPerson => {
       response.json(savedPerson)
-    .catch(error => next(error))
-
-  })
-
+    })
+    .catch(error => {
+      next(error)
+    })
 })
 
 app.put('/api/persons/:id', (request, response, next) => {
@@ -85,11 +98,6 @@ app.put('/api/persons/:id', (request, response, next) => {
     .catch(error => next(error))
 })
 
-const PORT = process.env.PORT
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`)
-})
-
 const unknownEndpoint = (request, response) => {
   response.status(404).send({ error: 'unknown endpoint' })
 }
@@ -97,15 +105,10 @@ const unknownEndpoint = (request, response) => {
 // handler of requests with unknown endpoint
 app.use(unknownEndpoint)
 
-const errorHandler = (error, request, response, next) => {
-  console.error(error.message)
-
-  if (error.name === 'CastError') {
-    return response.status(400).send({ error: 'malformatted id' })
-  }
-
-  next(error)
-}
-
 // this has to be the last loaded middleware.
 app.use(errorHandler)
+
+const PORT = process.env.PORT
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`)
+})
