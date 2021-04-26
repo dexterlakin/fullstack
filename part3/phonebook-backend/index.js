@@ -16,14 +16,16 @@ const Person = require('./models/persons')
 app.get('/info', (request, response) => {
   let date_ob = new Date();
   let tz = Intl.DateTimeFormat().resolvedOptions().timeZone
-
-  response.send("<p>Phonebook has info for " +
-    persons.length +
+  Person.estimatedDocumentCount()
+  .then(c => {
+    response.send("<p>Phonebook has info for " +
+    c +
     " people</p>" +
     "<p>" +
     date_ob.toUTCString() + " (" + tz + ")" +
     "</p>"
   )
+  });
 })
 
 app.get('/api/persons', (request, response) => {
