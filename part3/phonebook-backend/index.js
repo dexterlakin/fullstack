@@ -48,7 +48,7 @@ app.post('/api/persons', (request, response) => {
     return response.status(400).json({ error: 'name or number missing' })
   }
 
-  const person = new Persons({
+  const person = new Person({
     name: body.name,
     number: body.number,
   })
