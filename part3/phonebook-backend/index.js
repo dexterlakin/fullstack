@@ -1,9 +1,13 @@
 require('dotenv').config()
-
 const express = require('express')
+const requestLogger = require('morgan')
+
 const app = express()
+
 app.use(express.static('build'))
 app.use(express.json())
+app.use(requestLogger('combined'))
+
 const cors = require('cors')
 app.use(cors())
 
@@ -34,11 +38,12 @@ app.get('/api/persons/:id', (request, response) => {
   })
 })
 
-app.delete('/api/persons/:id', (request, response) => {
-  const id = Number(request.params.id)
-  persons = persons.filter(person => person.id !== id)
-
-  response.status(204).end()
+app.delete('/api/persons/:id', (request, response, next) => {
+  Person.findByIdAndRemove(request.params.id)
+    .then(result => {
+      response.status(204).end()
+    })
+    .catch(error => next(error))
 })
 
 app.post('/api/persons', (request, response) => {
@@ -62,3 +67,23 @@ const PORT = process.env.PORT
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`)
 })
+
+const unknownEndpoint = (request, response) => {
+  response.status(404).send({ error: 'unknown endpoint' })
+}
+
+// handler of requests with unknown endpoint
+app.use(unknownEndpoint)
+
+const errorHandler = (error, request, response, next) => {
+  console.error(error.message)
+
+  if (error.name === 'CastError') {
+    return response.status(400).send({ error: 'malformatted id' })
+  }
+
+  next(error)
+}
+
+// this has to be the last loaded middleware.
+app.use(errorHandler)
