@@ -96,7 +96,7 @@ const Notification = ({ message }) => {
     return null
   }
   let className='notification'
-  if (message.includes('already deleted from server')) {
+  if (message.includes('already deleted from server') || message.includes('validation failed')) {
     className='error'
   }
   return (
@@ -165,6 +165,11 @@ const App = () => {
       setTimeout(() => {
         setNotificationMessage(null)
       }, 5000)
+    })
+    .catch(error => {
+      // this is the way to access the error message
+      console.log(error.response.data)
+      setNotificationMessage(`${error.response.data.error}`)
     })
   }
 
