@@ -2,8 +2,8 @@ POST http://localhost:3003/api/blogs
 content-type: application/json
 
 {
-  "title": "MartinFowler",
-  "author": "Martin Fowler",
-  "url": "https://martinfowler.com/",
+  "title": "DexterLakin",
+  "author": "Dexter Lakin",
+  "url": "https://dexterlakin.com/",
   "likes": 0
 }
