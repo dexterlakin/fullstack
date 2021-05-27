@@ -35,9 +35,16 @@ describe('when there is initially some blogs saved', () => {
       'Martin Fowler'
     )
   })
+
+  test('the unique identifier property of the blog posts is named id', async () => {
+    const response = await api.get('/api/blogs')
+
+    expect(response.body[0].id).toBeDefined()
+  })
 })
 
 afterAll(async () => {
   mongoose.disconnect()
-  await new Promise(resolve => setTimeout(() => resolve(), 500)) // avoid jest open handle error
+  // avoid jest open handle error
+  await new Promise(resolve => setTimeout(() => resolve(), 500))
 })
