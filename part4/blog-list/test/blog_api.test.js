@@ -66,20 +66,24 @@ describe('addition of a new blog', () => {
     expect(author).toContain(newBlog['author'])
   })
 
-  // test('fails with status code 400 if data invaild', async () => {
-  //   const newBlog = {
-  //     foo: 'bar'
-  //   }
+  test('likes property will default to 0 if missing', async () => {
+    const newBlog =   {
+      'title': 'TroyHunt',
+      'author': 'Troy Hunt',
+      'url': 'https://troyhunt.com/'
+    }
 
-  //   await api
-  //     .post('/api/blogs')
-  //     .send(newBlog)
-  //     .expect(400)
+    await api
+      .post('/api/blogs')
+      .send(newBlog)
+      .expect(201)
 
-  //   const blogsAtEnd = await helper.blogsInDb()
+    const blogsAtEnd = await helper.blogsInDb()
 
-  //   expect(blogsAtEnd).toHaveLength(helper.initialBlogs.length)
-  // })
+    const savedBlog = blogsAtEnd.find(b => b.author === newBlog['author'])
+
+    expect(savedBlog['likes']).toBe(0)
+  })
 })
 
 afterAll(async () => {
