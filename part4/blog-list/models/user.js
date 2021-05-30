@@ -3,7 +3,9 @@ const uniqueValidator = require('mongoose-unique-validator')
 const userSchema = new mongoose.Schema({
   username: {
     type: String,
-    unique: true
+    // The username must be unique.
+    unique: true,
+    required: true
   },
   name: String,
   passwordHash: String,
