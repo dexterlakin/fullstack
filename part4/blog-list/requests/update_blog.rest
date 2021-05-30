@@ -1,0 +1,10 @@
+PUT http://localhost:3003/api/blogs/60b36432c61b4c12640d49e9
+content-type: application/json
+
+{
+"likes": 1,
+"title": "MartinFowler",
+"author": "Martin Fowler",
+"url": "https://martinfowler.com/",
+"id": "60b36432c61b4c12640d49e9"
+}
