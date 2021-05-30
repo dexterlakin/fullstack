@@ -43,6 +43,45 @@ describe('when there is initially some blogs saved', () => {
   })
 })
 
+describe('addition of a new blog', () => {
+  test('succeeds with valid data', async () => {
+    const newBlog =   {
+      'title': 'TroyHunt',
+      'author': 'Troy Hunt',
+      'url': 'https://troyhunt.com/',
+      'likes': 0
+    }
+
+    await api
+      .post('/api/blogs')
+      .send(newBlog)
+      .expect(201)
+      .expect('Content-Type', /application\/json/)
+
+
+    const blogsAtEnd = await helper.blogsInDb()
+    expect(blogsAtEnd).toHaveLength(helper.initialBlogs.length + 1)
+
+    const author = blogsAtEnd.map(n => n.author)
+    expect(author).toContain(newBlog['author'])
+  })
+
+  // test('fails with status code 400 if data invaild', async () => {
+  //   const newBlog = {
+  //     foo: 'bar'
+  //   }
+
+  //   await api
+  //     .post('/api/blogs')
+  //     .send(newBlog)
+  //     .expect(400)
+
+  //   const blogsAtEnd = await helper.blogsInDb()
+
+  //   expect(blogsAtEnd).toHaveLength(helper.initialBlogs.length)
+  // })
+})
+
 afterAll(async () => {
   mongoose.disconnect()
   // avoid jest open handle error
