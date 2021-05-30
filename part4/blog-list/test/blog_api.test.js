@@ -84,6 +84,17 @@ describe('addition of a new blog', () => {
 
     expect(savedBlog['likes']).toBe(0)
   })
+
+  test('title and url properties are required', async () => {
+    const newBlog =   {
+      'author': 'Troy Hunt'
+    }
+
+    await api
+      .post('/api/blogs')
+      .send(newBlog)
+      .expect(400)
+  })
 })
 
 afterAll(async () => {
