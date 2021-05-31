@@ -11,32 +11,51 @@ const Blog = require('../models/blog')
 
 jest.setTimeout(50000)
 
-beforeEach(async () => {
-  await Blog.deleteMany({})
-  await Blog.insertMany(helper.initialBlogs)
-  await User.deleteMany({})
+const getToken = async () => {
+  const res = await api
+    .post('/api/login')
+    .send({username: 'testuser', password: 'sekret'})
+    .expect(200)
+    .expect('Content-Type', /application\/json/)
 
+  return res.body.token
+}
+
+beforeAll(async () => {
+  await User.deleteMany({})
   const passwordHash = await bcrypt.hash('sekret', 10)
-  const user = new User({ username: 'root', passwordHash })
+  const user = new User({ username: 'testuser', passwordHash })
 
   await user.save()
 })
 
+beforeEach(async () => {
+  await Blog.deleteMany({})
+  await Blog.insertMany(helper.initialBlogs)
+})
+
 describe('when there is initially some blogs saved', () => {
   test('blogs are returned as json', async () => {
+    const token = await getToken()
     await api.get('/api/blogs')
+      .auth(token, {type: 'bearer'})
       .expect(200)
       .expect('Content-Type', /application\/json/)
   })
 
   test('all blogs are returned', async () => {
-    const response = await api.get('/api/blogs')
-
+    const token = await getToken()
+    const response = await api
+      .get('/api/blogs')
+      .auth(token, {type: 'bearer'})
     expect(response.body).toHaveLength(helper.initialBlogs.length)
   })
 
   test('a specific blog is within the returned blogs', async () => {
-    const response = await api.get('/api/blogs')
+    const token = await getToken()
+    const response = await api
+      .get('/api/blogs')
+      .auth(token, {type: 'bearer'})
 
     const author = response.body.map(r => r.author)
 
@@ -46,7 +65,10 @@ describe('when there is initially some blogs saved', () => {
   })
 
   test('the unique identifier property of the blog posts is named id', async () => {
-    const response = await api.get('/api/blogs')
+    const token = await getToken()
+    const response = await api
+      .get('/api/blogs')
+      .auth(token, {type: 'bearer'})
 
     expect(response.body[0].id).toBeDefined()
   })
@@ -54,6 +76,7 @@ describe('when there is initially some blogs saved', () => {
 
 describe('addition of a new blog', () => {
   test('succeeds with valid data', async () => {
+    const token = await getToken()
     const newBlog =   {
       'title': 'TroyHunt',
       'author': 'Troy Hunt',
@@ -63,6 +86,7 @@ describe('addition of a new blog', () => {
 
     await api
       .post('/api/blogs')
+      .auth(token, {type: 'bearer'})
       .send(newBlog)
       .expect(201)
       .expect('Content-Type', /application\/json/)
@@ -75,7 +99,23 @@ describe('addition of a new blog', () => {
     expect(author).toContain(newBlog.author)
   })
 
+  test('fails if no token provided', async () => {
+    const newBlog =   {
+      'title': 'TroyHunt',
+      'author': 'Troy Hunt',
+      'url': 'https://troyhunt.com/',
+      'likes': 0
+    }
+
+    await api
+      .post('/api/blogs')
+      .send(newBlog)
+      .expect(401)
+      .expect('Content-Type', /application\/json/)
+  })
+
   test('likes property will default to 0 if missing', async () => {
+    const token = await getToken()
     const newBlog =   {
       'title': 'TroyHunt',
       'author': 'Troy Hunt',
@@ -84,6 +124,7 @@ describe('addition of a new blog', () => {
 
     await api
       .post('/api/blogs')
+      .auth(token, {type: 'bearer'})
       .send(newBlog)
       .expect(201)
 
@@ -95,12 +136,14 @@ describe('addition of a new blog', () => {
   })
 
   test('title and url properties are required', async () => {
+    const token = await getToken()
     const newBlog =   {
       'author': 'Troy Hunt'
     }
 
     await api
       .post('/api/blogs')
+      .auth(token, {type: 'bearer'})
       .send(newBlog)
       .expect(400)
   })
@@ -108,11 +151,13 @@ describe('addition of a new blog', () => {
 
 describe('deletion of a blog', () => {
   test('succeeds with status code 204 if id is valid', async () => {
+    const token = await getToken()
     const blogsAtStart = await helper.blogsInDb()
     const blogToDelete = blogsAtStart[0]
 
     await api
       .delete(`/api/blogs/${blogToDelete.id}`)
+      .auth(token, {type: 'bearer'})
       .expect(204)
 
     const blogsAtEnd = await helper.blogsInDb()
@@ -129,6 +174,7 @@ describe('deletion of a blog', () => {
 
 describe('updating a blog', () => {
   test('succeeds with status code 200 if id is valid', async () => {
+    const token = await getToken()
     const blogsAtStart = await helper.blogsInDb()
     const expectedLikes = blogsAtStart[0].likes + 1
     const blogToUpdate = blogsAtStart[0]
@@ -137,6 +183,7 @@ describe('updating a blog', () => {
 
     await api
       .put(`/api/blogs/${blogToUpdate.id}`)
+      .auth(token, {type: 'bearer'})
       .send(blogToUpdate)
       .expect(200)
 
@@ -155,6 +202,7 @@ describe('updating a blog', () => {
 
 describe('when there is initially one user in db', () => {
   test('creation succeeds with a fresh username', async () => {
+    const token = await getToken()
     const usersAtStart = await helper.usersInDb()
 
     const newUser = {
@@ -165,12 +213,14 @@ describe('when there is initially one user in db', () => {
 
     await api
       .post('/api/users')
+      .auth(token, {type: 'bearer'})
       .send(newUser)
       .expect(200)
       .expect('Content-Type', /application\/json/)
 
     const usersAtEnd = await api
       .get('/api/users')
+      .auth(token, {type: 'bearer'})
       .expect(200)
       .expect('Content-Type', /application\/json/)
 
@@ -181,16 +231,18 @@ describe('when there is initially one user in db', () => {
   })
 
   test('creation fails with proper statuscode and message if username already taken', async () => {
+    const token = await getToken()
     const usersAtStart = await helper.usersInDb()
 
     const newUser = {
-      username: 'root',
+      username: 'testuser',
       name: 'Superuser',
-      password: 'salainen',
+      password: 'sekret',
     }
 
     const result = await api
       .post('/api/users')
+      .auth(token, {type: 'bearer'})
       .send(newUser)
       .expect(400)
       .expect('Content-Type', /application\/json/)
@@ -202,6 +254,7 @@ describe('when there is initially one user in db', () => {
   })
 
   test('creation fails with proper statuscode and message if password is missing', async () => {
+    const token = await getToken()
     const usersAtStart = await helper.usersInDb()
 
     const newUser = {
@@ -211,6 +264,7 @@ describe('when there is initially one user in db', () => {
 
     const result = await api
       .post('/api/users')
+      .auth(token, {type: 'bearer'})
       .send(newUser)
       .expect(400)
       .expect('Content-Type', /application\/json/)
@@ -222,6 +276,7 @@ describe('when there is initially one user in db', () => {
   })
 
   test('creation fails with proper statuscode and message if password is too short', async () => {
+    const token = await getToken()
     const usersAtStart = await helper.usersInDb()
 
     const newUser = {
@@ -232,6 +287,7 @@ describe('when there is initially one user in db', () => {
 
     const result = await api
       .post('/api/users')
+      .auth(token, {type: 'bearer'})
       .send(newUser)
       .expect(400)
       .expect('Content-Type', /application\/json/)
