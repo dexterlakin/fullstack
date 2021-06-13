@@ -1,6 +1,0 @@
-DELETE http://localhost:3003/api/blogs/CHANGEME
-content-type: application/json
-authorization: bearer CHANGEME
-
-{
-}
