@@ -11,10 +11,29 @@ const App = () => {
   const [errorMessage, setErrorMessage] = useState(null)
 
   useEffect(() => {
+    const loggedUserJSON = window.localStorage.getItem('loggedInBlogAppUser')
+    if (loggedUserJSON) {
+      const user = JSON.parse(loggedUserJSON)
+      setUser(user)
+      blogService.setToken(user.token)
+    }
+  }, [])
+
+  useEffect(() => {
     blogService.getAll().then(blogs =>
       setBlogs( blogs )
     )
   }, [])
+
+  const handleLogout = () => {
+    window.localStorage.removeItem('loggedInBlogAppUser')
+  }
+
+  const logoutButton = () => (
+    <form onSubmit={handleLogout}>
+      <button type="submit">logout</button>
+    </form>
+  )
 
   const handleLogin = async (event) => {
     event.preventDefault()
@@ -23,10 +42,14 @@ const App = () => {
       const user = await loginService.login({
         username, password,
       })
+      window.localStorage.setItem(
+        'loggedInBlogAppUser', JSON.stringify(user)
+      )
+      blogService.setToken(user.token)
       setUser(user)
       setUsername('')
       setPassword('')
-      blogService.getAll(user.token).then(blogs =>
+      blogService.getAll().then(blogs =>
         setBlogs( blogs )
       )
     } catch (exception) {
@@ -77,6 +100,7 @@ const App = () => {
         loginForm() :
         blogList()
       }
+      {logoutButton()}
     </div>
   )
 }
