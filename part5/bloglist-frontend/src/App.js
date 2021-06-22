@@ -9,7 +9,7 @@ const App = () => {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
-  const [errorMessage, setErrorMessage] = useState(null)
+  const [notificationMessage, setNotificationMessage] = useState(null)
 
   useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem('loggedInBlogAppUser')
@@ -51,9 +51,9 @@ const App = () => {
         setBlogs( blogs )
       )
     } catch (exception) {
-      setErrorMessage('Wrong credentials')
+      setNotificationMessage('Wrong credentials')
       setTimeout(() => {
-        setErrorMessage(null)
+        setNotificationMessage(null)
       }, 5000)
     }
   }
@@ -95,6 +95,7 @@ const App = () => {
         .then(returnedBlog => {
         setBlogs(blogs.concat(returnedBlog))
         setNewBlog({title: '', author: '', url: ''})
+        setNotificationMessage(`A new blog "${blogObject.title}" by ${blogObject.author} was added.`)
       })
   }
 
@@ -168,8 +169,24 @@ const App = () => {
     </div>
   )
 
+  const Notification = ({ message }) => {
+    if (message === null) {
+      return null
+    }
+    let className='notification'
+    if (message.includes('Wrong credentials') || message.includes('validation failed')) {
+      className='error'
+    }
+    return (
+      <div className={className}>
+        {message}
+      </div>
+    )
+  }
+
   return (
     <div>
+      <Notification message={notificationMessage} />
       {user === null ?
         loginForm() :
         blogList()

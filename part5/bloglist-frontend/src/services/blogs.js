@@ -33,5 +33,7 @@ const update = (id, newObject) => {
   return request.then(response => response.data)
 }
 
+const blogService = { getAll, create, update, setToken }
 
-export default { getAll, create, update, setToken }
+
+export default blogService
