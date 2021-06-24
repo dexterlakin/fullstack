@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import Blog from './components/Blog'
 import LoginForm from './components/LoginForm'
 import NewBlogForm from './components/NewBlogForm'
@@ -8,11 +8,12 @@ import loginService from './services/login'
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
-  const [newBlog, setNewBlog] = useState({author: '', title: '', url: ''})
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
   const [notificationMessage, setNotificationMessage] = useState(null)
+
+  const blogFormRef = useRef()
 
   useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem('loggedInBlogAppUser')
@@ -66,61 +67,22 @@ const App = () => {
     }
   }
 
-
-  const addBlog = (event) => {
-    event.preventDefault()
-    const blogObject = {
-      title: newBlog.title,
-      author: newBlog.author,
-      url: newBlog.url,
-    }
-
+  const addBlog = (blogObject) => {
+    blogFormRef.current.toggleVisibility()
     blogService
       .create(blogObject)
-        .then(returnedBlog => {
+      .then(returnedBlog => {
         setBlogs(blogs.concat(returnedBlog))
-        setNewBlog({title: '', author: '', url: ''})
         setNotificationMessage(`A new blog "${blogObject.title}" by ${blogObject.author} was added.`)
       })
-  }
-
-  const handleTitleChange = (event) => {
-    const blog = {
-      title: event.target.value,
-      author: newBlog.author,
-      url: newBlog.url
-    }
-    setNewBlog(blog)
-  }
-
-  const handleAuthorChange = (event) => {
-    const blog = {
-      title: newBlog.title,
-      author: event.target.value,
-      url: newBlog.url
-    }
-    setNewBlog(blog)
-  }
-
-  const handleUrlChange = (event) => {
-    const blog = {
-      title: newBlog.title,
-      author: newBlog.author,
-      url: event.target.value
-    }
-    setNewBlog(blog)
   }
 
   const blogList = () => (
     <div>
       <h2>blogs</h2>
-      <Togglable buttonLabel="new blog">
+      <Togglable buttonLabel="new blog" ref={blogFormRef}>
         <NewBlogForm
-          addBlog={addBlog}
-          handleUrlChange={handleUrlChange}
-          handleAuthorChange={handleAuthorChange}
-          handleTitleChange={handleTitleChange}
-          newBlog
+          createBlog={addBlog}
         />
       </Togglable>
 
