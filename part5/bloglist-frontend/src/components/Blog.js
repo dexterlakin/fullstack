@@ -1,5 +1,5 @@
 import {useState, React} from 'react'
-const Blog = ({blog, updateBlog}) => {
+const Blog = ({blog, updateBlog, deleteBlog, user}) => {
   const blogStyle = {
     paddingTop: 10,
     paddingLeft: 2,
@@ -39,6 +39,19 @@ const Blog = ({blog, updateBlog}) => {
     </div>
   )
 
+  const handleDelete = (event) => {
+    event.preventDefault()
+    if (window.confirm(`Remove blog ${blog.title} by ${blog.author}`)) {
+      deleteBlog(blog.id)
+    }
+  }
+
+  const deleteButton = () => (
+    <form onSubmit={handleDelete}>
+      <button type="submit">remove</button>
+    </form>
+  )
+
   const detailedView = (
     <div>
       <p>{blog.title} {blog.author}</p>
@@ -48,6 +61,7 @@ const Blog = ({blog, updateBlog}) => {
         {likes} likes
         <button type="submit">like</button>
       </form>
+      { (user.username === blog.user || user.username === blog.user.username) && deleteButton() }
       </div>
     </div>
   )

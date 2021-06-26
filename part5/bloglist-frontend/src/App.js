@@ -74,14 +74,21 @@ const App = () => {
     blogService
       .create(blogObject)
       .then(returnedBlog => {
-        setBlogs(blogs.concat(returnedBlog))
         setNotificationMessage(`A new blog "${blogObject.title}" by ${blogObject.author} was added.`)
+        setBlogs(blogs.concat(returnedBlog))
       })
   }
 
   const updateBlog = (id, blogObject) => {
     blogService
       .update(id, blogObject)
+    blogService.getAll().then(blogs =>
+      setBlogs(blogs)
+    )
+  }
+
+  const deleteBlog = async (id) => {
+    await blogService.deleteBlog(id)
     blogService.getAll().then(blogs =>
       setBlogs(blogs)
     )
@@ -143,6 +150,8 @@ const App = () => {
               key={blog.id}
               blog={blog}
               updateBlog={updateBlog}
+              deleteBlog={deleteBlog}
+              user={user}
             />
           )}
         </ul>
