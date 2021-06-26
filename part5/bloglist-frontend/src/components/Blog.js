@@ -1,5 +1,5 @@
-import {useState, React} from 'react'
-const Blog = ({blog, updateBlog, deleteBlog, user}) => {
+import { useState, React } from 'react'
+const Blog = ({ blog, updateBlog, deleteBlog, user }) => {
   const blogStyle = {
     paddingTop: 10,
     paddingLeft: 2,
@@ -13,7 +13,7 @@ const Blog = ({blog, updateBlog, deleteBlog, user}) => {
   const [likes, setLikes] = useState(blog.likes)
 
   const label = visible ?
-   'hide' : 'view'
+    'hide' : 'view'
 
   const handleClick = () => {
     visible ?
@@ -57,11 +57,11 @@ const Blog = ({blog, updateBlog, deleteBlog, user}) => {
       <p>{blog.title} {blog.author}</p>
       <p>{blog.url}</p>
       <div>
-      <form onSubmit={handleLike}>
-        {likes} likes
-        <button type="submit">like</button>
-      </form>
-      { (user.username === blog.user || user.username === blog.user.username) && deleteButton() }
+        <form onSubmit={handleLike}>
+          {likes} likes
+          <button type="submit">like</button>
+        </form>
+        { (user.username === blog.user || user.username === blog.user.username) && deleteButton() }
       </div>
     </div>
   )
@@ -69,10 +69,12 @@ const Blog = ({blog, updateBlog, deleteBlog, user}) => {
   return (
     <div style={blogStyle}>
       <div>
-        { visible ? detailedView : preView }
+        <li className='blog'>
+          { visible ? detailedView : preView }
+        </li>
       </div>
       <button onClick={handleClick}>{label}</button>
-  </div>
+    </div>
   )
 }
 
