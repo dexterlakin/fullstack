@@ -21,9 +21,11 @@ const App = () => {
       const user = JSON.parse(loggedUserJSON)
       setUser(user)
       blogService.setToken(user.token)
-      blogService.getAll().then(blogs =>
-        setBlogs( blogs )
-      )
+      blogService.getAll()
+      .then(blogs => {
+        const sortedBlogs = blogs.sort((a, b) => (a.likes < b.likes) ? 1 : (a.likes === b.likes) ? ((a.author.toUpperCase() > b.author.toUpperCase()) ? 1 : -1) : -1 )
+        setBlogs(sortedBlogs)
+      })
     }
   }, [])
 
@@ -81,7 +83,7 @@ const App = () => {
     blogService
       .update(id, blogObject)
     blogService.getAll().then(blogs =>
-      setBlogs( blogs )
+      setBlogs(blogs)
     )
   }
 

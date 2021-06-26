@@ -45,7 +45,7 @@ const Blog = ({blog, updateBlog}) => {
       <p>{blog.url}</p>
       <div>
       <form onSubmit={handleLike}>
-        {likes}
+        {likes} likes
         <button type="submit">like</button>
       </form>
       </div>
