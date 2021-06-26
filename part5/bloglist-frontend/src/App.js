@@ -77,19 +77,20 @@ const App = () => {
       })
   }
 
-  const blogList = () => (
-    <div>
-      <h2>blogs</h2>
-      <Togglable buttonLabel="new blog" ref={blogFormRef}>
-        <NewBlogForm
-          createBlog={addBlog}
-        />
-      </Togglable>
+  const updateBlog = (id, blogObject) => {
+    blogService
+      .update(id, blogObject)
+    blogService.getAll().then(blogs =>
+      setBlogs( blogs )
+    )
+  }
 
-      {blogs.map(blog =>
-        <Blog key={blog.id} blog={blog} />
-      )}
-    </div>
+  const blogForm = () => (
+    <Togglable buttonLabel="new blog" ref={blogFormRef}>
+      <NewBlogForm
+        createBlog={addBlog}
+      />
+    </Togglable>
   )
 
   const Notification = ({ message }) => {
@@ -121,12 +122,29 @@ const App = () => {
 
   return (
     <div>
+      <h1>Blogs</h1>
       <Notification message={notificationMessage} />
+
       {user === null ?
         loginForm() :
-        blogList()
+        <div>
+          <p>{user.name} logged in</p>
+          {logoutButton()}
+          {blogForm()}
+        </div>
       }
-      {logoutButton()}
+
+      <div>
+        <ul>
+          {blogs.map(blog =>
+            <Blog
+              key={blog.id}
+              blog={blog}
+              updateBlog={updateBlog}
+            />
+          )}
+        </ul>
+      </div>
     </div>
   )
 }
