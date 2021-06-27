@@ -35,7 +35,7 @@ const App = () => {
 
   const logoutButton = () => (
     <form onSubmit={handleLogout}>
-      <button type="submit">logout</button>
+      <button type="submit" id="logoutButton">logout</button>
     </form>
   )
 
