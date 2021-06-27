@@ -58,7 +58,7 @@ const Blog = ({ blog, updateBlog, deleteBlog, user }) => {
       <p>{blog.url}</p>
       <div>
         <form onSubmit={handleLike}>
-          {likes} likes
+          <text>{likes} likes</text>
           <button type="submit">like</button>
         </form>
         { (user.username === blog.user || user.username === blog.user.username) && deleteButton() }

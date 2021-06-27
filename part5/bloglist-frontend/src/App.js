@@ -15,17 +15,21 @@ const App = () => {
 
   const blogFormRef = useRef()
 
+  const setAllBlogs = () => {
+    blogService.getAll()
+      .then(blogs => {
+        const sortedBlogs = blogs.sort((a, b) => (a.likes < b.likes) ? 1 : -1 )
+        setBlogs(sortedBlogs)
+      })
+  }
+
   useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem('loggedInBlogAppUser')
     if (loggedUserJSON) {
       const user = JSON.parse(loggedUserJSON)
       setUser(user)
       blogService.setToken(user.token)
-      blogService.getAll()
-        .then(blogs => {
-          const sortedBlogs = blogs.sort((a, b) => (a.likes < b.likes) ? 1 : (a.likes === b.likes) ? ((a.author.toUpperCase() > b.author.toUpperCase()) ? 1 : -1) : -1 )
-          setBlogs(sortedBlogs)
-        })
+      setAllBlogs()
     }
   }, [])
 
@@ -53,9 +57,7 @@ const App = () => {
       setUser(user)
       setUsername('')
       setPassword('')
-      blogService.getAll().then(blogs =>
-        setBlogs( blogs )
-      )
+      setAllBlogs()
       setNotificationMessage(`${user.username} logged in.`)
       setTimeout(() => {
         setNotificationMessage(null)
@@ -82,16 +84,12 @@ const App = () => {
   const updateBlog = (id, blogObject) => {
     blogService
       .update(id, blogObject)
-    blogService.getAll().then(blogs =>
-      setBlogs(blogs)
-    )
+    setAllBlogs()
   }
 
   const deleteBlog = async (id) => {
     await blogService.deleteBlog(id)
-    blogService.getAll().then(blogs =>
-      setBlogs(blogs)
-    )
+    setAllBlogs()
   }
 
   const blogForm = () => (

@@ -1,5 +1,4 @@
 import React from 'react'
-import { prettyDOM } from '@testing-library/dom'
 import '@testing-library/jest-dom/extend-expect'
 import { render, fireEvent } from '@testing-library/react'
 import Blog from './Blog'
@@ -27,8 +26,6 @@ test('renders content', () => {
       deleteBlog={deleteMockHandler}
     />
   )
-
-  const li = component.container.querySelector('li')
 
   expect(component.container).toHaveTextContent(
     `${blog.title} ${blog.author}`

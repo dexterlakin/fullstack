@@ -1,7 +1,6 @@
 import React from 'react'
-import { prettyDOM } from '@testing-library/dom'
 import '@testing-library/jest-dom/extend-expect'
-import { screen, render, fireEvent } from '@testing-library/react'
+import { render, fireEvent } from '@testing-library/react'
 import NewBlogForm from './NewBlogForm'
 
 const blog = {
