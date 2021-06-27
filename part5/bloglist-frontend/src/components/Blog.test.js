@@ -1,7 +1,7 @@
 import React from 'react'
 import { prettyDOM } from '@testing-library/dom'
 import '@testing-library/jest-dom/extend-expect'
-import { render } from '@testing-library/react'
+import { render, fireEvent } from '@testing-library/react'
 import Blog from './Blog'
 
 test('renders content', () => {
@@ -16,18 +16,19 @@ test('renders content', () => {
     'user': user
   }
 
+  const updateMockHandler = jest.fn()
+  const deleteMockHandler = jest.fn()
+
   const component = render(
     <Blog
       blog={blog}
       user={user}
+      updateBlog={updateMockHandler}
+      deleteBlog={deleteMockHandler}
     />
   )
 
-  component.debug()
-
   const li = component.container.querySelector('li')
-
-  console.log(prettyDOM(li))
 
   expect(component.container).toHaveTextContent(
     `${blog.title} ${blog.author}`
@@ -36,4 +37,22 @@ test('renders content', () => {
   expect(component.container).not.toHaveTextContent(
     `${blog.url} ${blog.likes}`
   )
+
+  const button = component.getByText('view')
+  fireEvent.click(button)
+
+  expect(component.container).toHaveTextContent(
+    `${blog.url}`
+  )
+
+  expect(component.container).toHaveTextContent(
+    `${blog.likes} likes`
+  )
+
+  const likeButton = component.getByText('like')
+  fireEvent.click(likeButton)
+  fireEvent.click(likeButton)
+
+  expect(updateMockHandler).toHaveBeenCalledTimes(2)
+
 })

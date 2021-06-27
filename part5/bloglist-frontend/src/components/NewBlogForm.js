@@ -1,8 +1,8 @@
-import React, {useState} from 'react'
+import React, { useState } from 'react'
 
-const NewBlogForm = ({createBlog}) => {
+const NewBlogForm = ({ createBlog }) => {
 
-  const [newBlog, setNewBlog] = useState({author: '', title: '', url: ''})
+  const [newBlog, setNewBlog] = useState({ author: '', title: '', url: '' })
 
   const addBlog = (event) => {
     event.preventDefault()
@@ -11,7 +11,7 @@ const NewBlogForm = ({createBlog}) => {
       author: newBlog.author,
       url: newBlog.url,
     })
-    setNewBlog({title: '', author: '', url: ''})
+    setNewBlog({ title: '', author: '', url: '' })
   }
 
   const handleTitleChange = (event) => {

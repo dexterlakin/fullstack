@@ -22,10 +22,10 @@ const App = () => {
       setUser(user)
       blogService.setToken(user.token)
       blogService.getAll()
-      .then(blogs => {
-        const sortedBlogs = blogs.sort((a, b) => (a.likes < b.likes) ? 1 : (a.likes === b.likes) ? ((a.author.toUpperCase() > b.author.toUpperCase()) ? 1 : -1) : -1 )
-        setBlogs(sortedBlogs)
-      })
+        .then(blogs => {
+          const sortedBlogs = blogs.sort((a, b) => (a.likes < b.likes) ? 1 : (a.likes === b.likes) ? ((a.author.toUpperCase() > b.author.toUpperCase()) ? 1 : -1) : -1 )
+          setBlogs(sortedBlogs)
+        })
     }
   }, [])
 
