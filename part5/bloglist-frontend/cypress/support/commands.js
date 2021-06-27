@@ -21,6 +21,22 @@ Cypress.Commands.add('login', (username, password) => {
     .click()
 })
 
+Cypress.Commands.add('createBlog', (blog) => {
+  cy.contains('new blog')
+  .click()
+  cy.get(':nth-child(1) > input')
+    .type(blog.title)
+  cy.get(':nth-child(2) > input')
+    .type(blog.author)
+  cy.get(':nth-child(3) > input')
+    .type(blog.url)
+  cy.get('.NewBlogForm > button')
+    .click()
+
+  cy.get('.blog > button')
+    .click()
+})
+
 //
 //
 // -- This is a child command --

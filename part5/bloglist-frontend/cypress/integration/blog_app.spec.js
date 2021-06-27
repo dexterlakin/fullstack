@@ -10,21 +10,8 @@ describe('Blog app',function() {
     })
 
     it('A blog can be created', function() {
-      cy.contains('new blog')
-        .click()
       cy.fixture('blog').then((blog) => {
-        cy.get(':nth-child(1) > input')
-          .type(blog.title)
-        cy.get(':nth-child(2) > input')
-          .type(blog.author)
-        cy.get(':nth-child(3) > input')
-          .type(blog.url)
-        cy.get('.NewBlogForm > button')
-          .click()
-
-        cy.get('.blog > button')
-          .click()
-        
+        cy.createBlog(blog)
         cy.get('.blog > :nth-child(1) > :nth-child(1)')
           .then((it) => {
             expect(it).to.have.text(`${blog.title} ${blog.author}`)
@@ -35,11 +22,14 @@ describe('Blog app',function() {
 
     it('A blog can be liked', function() {
       cy.contains('0 likes')
-
       cy.get('button').contains('like')
         .click()
-
       cy.contains('1 likes')
+    })
+
+    it('the user who created a blog can delete it', function() {
+      cy.get('button').contains('remove')
+        .click()
     })
   })
 })
