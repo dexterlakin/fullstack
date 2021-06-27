@@ -68,12 +68,10 @@ const Blog = ({ blog, updateBlog, deleteBlog, user }) => {
 
   return (
     <div style={blogStyle}>
-      <div>
-        <li className='blog'>
-          { visible ? detailedView : preView }
-        </li>
-      </div>
-      <button onClick={handleClick}>{label}</button>
+      <li className='blog'>
+        { visible ? detailedView : preView }
+        <button onClick={handleClick}>{label}</button>
+      </li>
     </div>
   )
 }

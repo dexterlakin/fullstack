@@ -29,7 +29,7 @@ describe('<NewBlogForm />', () => {
     form = component.container.querySelector('form')
     titleInput = component.container.querySelector('input[name=title]')
     authorInput = component.container.querySelector('input[name=author]')
-    urlInput = component.container.querySelector('input[name=url]') 
+    urlInput = component.container.querySelector('input[name=url]')
   })
 
   test('Renders content', () => {
@@ -48,17 +48,17 @@ describe('<NewBlogForm />', () => {
   test('calls createBlog with correct params', () => {
     // arrange
     // set author, title, url
-    
-    fireEvent.change(titleInput, { 
-      target: { value: blog.title } 
+
+    fireEvent.change(titleInput, {
+      target: { value: blog.title }
     })
 
-    fireEvent.change(authorInput, { 
-      target: { value: blog.author } 
+    fireEvent.change(authorInput, {
+      target: { value: blog.author }
     })
 
-    fireEvent.change(urlInput, { 
-      target: { value: blog.url } 
+    fireEvent.change(urlInput, {
+      target: { value: blog.url }
     })
     // act
     // submit
