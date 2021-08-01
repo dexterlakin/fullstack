@@ -1,18 +1,34 @@
-import React from 'react'
+import { useState, React } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 
 const App = () => {
+
+  const [newAnecdote, setNewAnecdote] = useState('')
+
   const anecdotes = useSelector(state => state)
   const dispatch = useDispatch()
 
   const vote = (id) => {
     console.log('vote', id)
     dispatch({
-      type: 'ANECDOTE/VOTE',
+      type: 'ANECDOTE/VOTED',
       data: {
         id: id
       }
     })
+  }
+
+  const createAnecdote = async (event) => {
+    event.preventDefault()
+    console.log('new anecdote', newAnecdote)
+    dispatch({
+      type: 'ANECDOTE/CREATED',
+      data: newAnecdote
+    })
+  }
+
+  const handleNewAnecdoteChange = (event) => {
+    setNewAnecdote(event.target.value)
   }
 
   return (
@@ -30,9 +46,14 @@ const App = () => {
         </div>
       )}
       <h2>create new</h2>
-      <form>
-        <div><input /></div>
-        <button>create</button>
+      <form onSubmit={createAnecdote}>
+        <div>
+          <input
+            value={newAnecdote}
+            onChange={handleNewAnecdoteChange}
+          />
+        </div>
+        <button type="submit">create</button>
       </form>
     </div>
   )

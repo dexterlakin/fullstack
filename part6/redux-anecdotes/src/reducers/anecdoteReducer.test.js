@@ -17,7 +17,7 @@ describe('anecdote reducer', () => {
 
   test('vote is incremented', () => {
     const action = {
-      type: 'ANECDOTE/VOTE',
+      type: 'ANECDOTE/VOTED',
       data: {
         id: initialState[0].id
       }
@@ -31,20 +31,23 @@ describe('anecdote reducer', () => {
     expect(newState.find(x => x.id === initialState[0].id).votes).toEqual(2)
   })
 
-  // test('ok is incremented', () => {
-  //   const action = {
-  //     type: 'OK'
-  //   }
-  //   const state = initialState
+  test('Creates a new anecdote', () => {
+    const action = {
+      type: 'ANECDOTE/CREATED',
+      data: "Debugging is twice as hard as writing the code in the first place. Therefore, if you write the code as cleverly as possible, you are, by definition, not smart enough to debug it."
+    }
+    const state = initialState
 
-  //   deepFreeze(state)
-  //   const newState = counterReducer(state, action)
-  //   expect(newState).toEqual({
-  //     good: 0,
-  //     ok: 1,
-  //     bad: 0
-  //   })
-  // })
+    deepFreeze(state)
+    const newState = reducer(state, action)
+    expect(newState).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          content: action.data
+        })
+      ])
+    )
+  })
 
   // test('bad is incremented', () => {
   //   const action = {
