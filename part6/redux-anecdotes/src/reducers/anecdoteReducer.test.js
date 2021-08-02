@@ -1,5 +1,5 @@
 import deepFreeze from 'deep-freeze'
-import reducer from './anecdoteReducer'
+import { reducer } from './anecdoteReducer'
 
 describe('anecdote reducer', () => {
   const initialState = [
