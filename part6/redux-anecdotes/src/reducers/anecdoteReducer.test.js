@@ -18,9 +18,7 @@ describe('anecdote reducer', () => {
   test('vote is incremented', () => {
     const action = {
       type: 'ANECDOTE/VOTED',
-      data: {
-        id: initialState[0].id
-      }
+      id: initialState[0].id
     }
     const state = initialState
 
