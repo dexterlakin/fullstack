@@ -11,7 +11,7 @@ const setNotification = (notification) => {
   return (
     {
       type: 'NOTIFICATION/SET',
-      notification,
+      notification: notification,
     }
   )
 }
