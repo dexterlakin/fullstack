@@ -1,10 +1,17 @@
 import anecdoteService from '../services/anecdotes'
 
-const incrementVote = (id) => {
-  return ({
-    type: 'ANECDOTE/VOTED',
-    id: id
-  })
+const incrementVote = id => {
+  return async dispatch => {
+    const updatedAnecdote = await anecdoteService.updateVote(id)
+
+    dispatch({
+      type: 'ANECDOTE/VOTED',
+      data: {
+        id: id,
+        updatedAnecdote: updatedAnecdote
+      }
+    })
+  }
 }
 
 const createAnecdote = content => {
@@ -32,14 +39,8 @@ const anecdoteReducer = (state = [], action) => {
   console.log('action', action)
   switch (action.type) {
     case 'ANECDOTE/VOTED': {
-      const id = action.id
-      const anecdoteToChange = state.find(n => n.id === id)
-      const changedAnecdote = {
-        ...anecdoteToChange,
-        votes: anecdoteToChange.votes + 1
-      }
       return state.map(anecdote =>
-        anecdote.id !== id ? anecdote : changedAnecdote
+        anecdote.id === action.data.id ? action.data.updatedAnecdote : anecdote
       )
     }
     case 'ANECDOTE/CREATED': {
