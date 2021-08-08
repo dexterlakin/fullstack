@@ -16,7 +16,7 @@ const setNotification = (notification, timeout) => {
     setTimeout(() => {
       dispatch({
         type: 'NOTIFICATION/SET',
-        notification: notification,
+        notification: '',
       })
     }, timeout * 1000)
   }
