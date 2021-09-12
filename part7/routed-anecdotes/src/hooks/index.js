@@ -4,7 +4,12 @@ export const useField = (type) => {
   const [value, setValue] = useState('')
 
   const onChange = (event) => {
-    setValue(event.target.value)
+    // reset button click
+    if (event.type === 'reset') {
+      setValue('')
+    } else {
+      setValue(event.target.value)
+    }
   }
 
   return {
