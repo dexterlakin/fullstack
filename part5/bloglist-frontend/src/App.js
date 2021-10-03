@@ -5,20 +5,24 @@ import NewBlogForm from './components/NewBlogForm'
 import Togglable from './components/Togglable'
 import blogService from './services/blogs'
 import loginService from './services/login'
+import { useDispatch } from 'react-redux'
+import { setNotification } from './reducers/notificationReducer'
+import ConnectedNotification from './components/Notification'
 
 const App = () => {
+  const dispatch = useDispatch()
+
   const [blogs, setBlogs] = useState([])
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
-  const [notificationMessage, setNotificationMessage] = useState(null)
 
   const blogFormRef = useRef()
 
   const setAllBlogs = () => {
     blogService.getAll()
       .then(blogs => {
-        const sortedBlogs = blogs.sort((a, b) => (a.likes < b.likes) ? 1 : -1 )
+        const sortedBlogs = blogs.sort((a, b) => (a.likes < b.likes) ? 1 : -1)
         setBlogs(sortedBlogs)
       })
   }
@@ -58,16 +62,9 @@ const App = () => {
       setUsername('')
       setPassword('')
       setAllBlogs()
-      setNotificationMessage(`${user.username} logged in.`)
-      setTimeout(() => {
-        setNotificationMessage(null)
-      }, 5000)
-
+      dispatch(setNotification(`${user.username} logged in.`, 5))
     } catch (exception) {
-      setNotificationMessage('Wrong credentials')
-      setTimeout(() => {
-        setNotificationMessage(null)
-      }, 5000)
+      dispatch(setNotification('Wrong credentials', 5))
     }
   }
 
@@ -76,7 +73,7 @@ const App = () => {
     blogService
       .create(blogObject)
       .then(returnedBlog => {
-        setNotificationMessage(`A new blog "${blogObject.title}" by ${blogObject.author} was added.`)
+        dispatch(setNotification(`A new blog "${blogObject.title}" by ${blogObject.author} was added.`, 5))
         setBlogs(blogs.concat(returnedBlog))
       })
   }
@@ -100,21 +97,6 @@ const App = () => {
     </Togglable>
   )
 
-  const Notification = ({ message }) => {
-    if (message === null) {
-      return null
-    }
-    let className='notification'
-    if (message.includes('Wrong credentials') || message.includes('validation failed')) {
-      className='error'
-    }
-    return (
-      <div className={className}>
-        {message}
-      </div>
-    )
-  }
-
   const loginForm = () => (
     <Togglable buttonLabel="log in">
       <LoginForm
@@ -130,7 +112,7 @@ const App = () => {
   return (
     <div>
       <h1>Blogs</h1>
-      <Notification message={notificationMessage} />
+      <ConnectedNotification />
 
       {user === null ?
         loginForm() :
