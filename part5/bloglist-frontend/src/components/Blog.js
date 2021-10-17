@@ -1,5 +1,11 @@
 import { useState, React } from 'react'
-const Blog = ({ blog, updateBlog, deleteBlog, user }) => {
+import { useDispatch } from 'react-redux'
+import { incrementLikes, deleteFromState } from '../reducers/blogReducer'
+import { setNotification } from '../reducers/notificationReducer'
+
+const Blog = ({ blog, user }) => {
+
+  const dispatch = useDispatch()
   const blogStyle = {
     paddingTop: 10,
     paddingLeft: 2,
@@ -9,8 +15,6 @@ const Blog = ({ blog, updateBlog, deleteBlog, user }) => {
   }
 
   const [visible, setVisibility] = useState(false)
-
-  const [likes, setLikes] = useState(blog.likes)
 
   const label = visible ?
     'hide' : 'view'
@@ -23,14 +27,8 @@ const Blog = ({ blog, updateBlog, deleteBlog, user }) => {
 
   const handleLike = (event) => {
     event.preventDefault()
-    setLikes(likes + 1)
-    updateBlog(blog.id, {
-      user: blog.user,
-      likes: likes,
-      author: blog.author,
-      title: blog.title,
-      url: blog.url
-    })
+    dispatch(incrementLikes(blog))
+    dispatch(setNotification(`you liked '${blog.title}'`, 5))
   }
 
   const preView = (
@@ -42,7 +40,8 @@ const Blog = ({ blog, updateBlog, deleteBlog, user }) => {
   const handleDelete = (event) => {
     event.preventDefault()
     if (window.confirm(`Remove blog ${blog.title} by ${blog.author}`)) {
-      deleteBlog(blog.id)
+      dispatch(deleteFromState(blog.id))
+      dispatch(setNotification(`you deleted '${blog.title}'`, 5))
     }
   }
 
@@ -58,10 +57,10 @@ const Blog = ({ blog, updateBlog, deleteBlog, user }) => {
       <p>{blog.url}</p>
       <div>
         <form onSubmit={handleLike}>
-          <text>{likes} likes</text>
+          <p>{blog.likes} likes</p>
           <button type="submit">like</button>
         </form>
-        { (user.username === blog.user || user.username === blog.user.username) && deleteButton() }
+        { (user.id === blog.user || user.id === blog.user.id) && deleteButton() }
       </div>
     </div>
   )

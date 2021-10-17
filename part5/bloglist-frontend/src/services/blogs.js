@@ -27,12 +27,27 @@ const create = async newObject => {
 }
 
 const update = (id, newObject) => {
-  const config = {
-    headers: { Authorization: token },
-  }
+  const config = token ?
+    {
+      headers: { Authorization: token },
+    } :
+    {}
   const request = axios.put(`${baseUrl}/${id}`, newObject, config)
   return request.then(response => response.data)
 }
+
+const like = async (blog) => {
+  const config = token ?
+    {
+      headers: { Authorization: token },
+    } :
+    {}
+
+  blog.likes += 1
+  const response = await axios.put(`${baseUrl}/${blog.id}`, blog, config)
+  return response.data
+}
+
 
 const deleteBlog = async (id) => {
   const config = {
@@ -42,7 +57,7 @@ const deleteBlog = async (id) => {
   return response.data
 }
 
-const blogService = { getAll, create, update, deleteBlog, setToken }
+const blogService = { getAll, create, update, like, deleteBlog, setToken }
 
 
 export default blogService
