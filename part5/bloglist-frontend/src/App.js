@@ -28,8 +28,7 @@ const App = () => {
       blogService.setToken(user.token)
       blogService.getAll()
         .then(blogs => {
-          const sortedBlogs = blogs.sort((a, b) => (a.likes < b.likes) ? 1 : -1)
-          dispatch(initializeBlogs(sortedBlogs))
+          dispatch(initializeBlogs(blogs))
         })
     }
   }, [loggedUserJSON])

@@ -6,7 +6,9 @@ blogRouter.get('/', async (request, response) => {
     .find({})
     .populate('user', { username: 1, name: 1, id: 1 })
 
-  response.json(blogs)
+  const sortedBlogs = blogs.sort((a, b) => (a.likes < b.likes) ? 1 : -1)
+
+  response.json(sortedBlogs)
 })
 
 blogRouter.post('/', async (request, response) => {
@@ -28,8 +30,7 @@ blogRouter.post('/', async (request, response) => {
 blogRouter.delete('/:id', async (request, response) => {
   const blogToDelete = await Blog.findById(request.params.id)
 
-  if ( blogToDelete.user.toString() === request.user._id.toString() )
-  {
+  if (blogToDelete.user.toString() === request.user._id.toString()) {
     await Blog.findByIdAndRemove(request.params.id)
     response.status(204).end()
   } else {
