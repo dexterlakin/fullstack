@@ -4,37 +4,35 @@ import NewBlogForm from './components/NewBlogForm'
 import Togglable from './components/Togglable'
 import blogService from './services/blogs'
 import loginService from './services/login'
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { setNotification } from './reducers/notificationReducer'
 import { initializeBlogs, createBlog } from './reducers/blogReducer'
+import { login, logout } from './reducers/userReducer'
 import ConnectedNotification from './components/Notification'
 import BlogList from './components/BlogList'
 
 const App = () => {
   const dispatch = useDispatch()
+  const reduxUser = useSelector(state => state.user)
 
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
-  const [user, setUser] = useState(null)
 
   const blogFormRef = useRef()
 
-  const loggedUserJSON = window.localStorage.getItem('loggedInBlogAppUser')
 
   useEffect(() => {
-    if (loggedUserJSON) {
-      const user = JSON.parse(loggedUserJSON)
-      setUser(user)
-      blogService.setToken(user.token)
+    if (Object.keys(reduxUser).length !== 0) {
       blogService.getAll()
         .then(blogs => {
           dispatch(initializeBlogs(blogs))
         })
     }
-  }, [loggedUserJSON])
+  }, [reduxUser])
 
   const handleLogout = () => {
-    window.localStorage.removeItem('loggedInBlogAppUser')
+    window.localStorage.removeItem('blogAppUserToken')
+    dispatch(logout)
   }
 
   const logoutButton = () => (
@@ -50,11 +48,8 @@ const App = () => {
       const user = await loginService.login({
         username, password,
       })
-      window.localStorage.setItem(
-        'loggedInBlogAppUser', JSON.stringify(user)
-      )
       blogService.setToken(user.token)
-      setUser(user)
+      dispatch(login(user))
       setUsername('')
       setPassword('')
       dispatch(setNotification(`${user.username} logged in.`, 5))
@@ -93,17 +88,17 @@ const App = () => {
       <h1>Blogs</h1>
       <ConnectedNotification />
 
-      {user === null ?
+      {Object.keys(reduxUser).length === 0 ?
         loginForm() :
         <div>
-          <p>{user.name} logged in</p>
+          <p>{reduxUser.name} logged in</p>
           {logoutButton()}
           {blogForm()}
         </div>
       }
 
       <div>
-        <BlogList user={user}/>
+        <BlogList user={reduxUser} />
       </div>
     </div>
   )

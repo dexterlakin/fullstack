@@ -9,7 +9,7 @@ const BlogList = ({ user }) => {
   return (
     <div>
       <ul>
-        {[...blogs].sort((a, b) => b.likes - a.likes)
+        {[...blogs]
           .map(blog =>
             <Blog
               key={blog.id}
